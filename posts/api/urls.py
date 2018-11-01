@@ -7,4 +7,5 @@ urlpatterns = [
     path('post_summary/',views.ShowPostwithSummary.as_view(),name="PostSummary"),
     path('summary/',views.PostSummary.as_view(),name="Summary"),
     path('category_posts/',views.PostCategorywise.as_view(),name="CategoryPosts"),
+    path('whole_post/',views.WholePostAPIView.as_view(),name="WholePost"),
 ]

@@ -3,6 +3,8 @@ from .serializers import *
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from posts.models import *
+from more_itertools import unique_everseen
+
 
 class PostHeadlineAPIView(APIView):
     def get(self,request):
@@ -52,5 +54,26 @@ class PostCategorywise(APIView):
             post_dict ={"id":post.id,"headline":post.headline,"summary":summ,"published":post.pub_date,"category":post.category,"source":post.source}
             overall.append(post_dict)
         return Response(overall)
+
+class WholePostAPIView(APIView):
+    def get(self,request):
+        posts = Post.objects.all()[:50]
+        overall = []
+        for post in posts:
+            headline_key_list = []
+            headline_keys = post.headlinekeyword_set.all()
+            for headkey in headline_keys:
+                headline_key_list.append(headkey.keyword)
+            summary = post.summary_set.all()
+            summa = []
+            for i in summary:
+                summa.append(i.text)
+            summ = ''.join(summa)
+
+            headline_key_list = list(unique_everseen(headline_key_list))
+            post_dict ={"id":post.id,"headline":post.headline,"published":post.pub_date,"summary":summa,"category":post.category,"source":post.source,'headline_keys':headline_key_list,"body":post.text}
+            overall.append(post_dict)
+        return Response(overall)
+
 
 

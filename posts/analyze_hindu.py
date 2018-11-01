@@ -21,6 +21,7 @@ def read_file(path):
     return content_list
 
 def find_pos(content):
+    print('got into find_pos')
     if type(content) == list:
         cont = ','.join(content)
     else:
@@ -32,18 +33,44 @@ def find_pos(content):
     for i in token:
         if i not in _stopwords and i != '’' and i != '”':
             words.append(i)
-    find_nnp(words)
+    keywords = find_nnp(words)
+    print('return keyword')
+    return keywords
 
 
 def find_nnp(words):
+    print('in find_nnp')
     tagged = pos_tag(words)
     noun_tags = []
+    noun_index = []
     for i,j in tagged:
         if j == 'NNP':
             noun_tags.append(i)
-            print(words.index(i))
-    counts = Counter(noun_tags)
-    print(noun_tags)
+            noun_index.append(words.index(i))
+    final_keys = []
+    for num,nind in enumerate(noun_index):
+        if nind > 0:
+            try:
+                if noun_index[nind+1] - noun_index[nind] == 1:
+                    key1 = noun_index[nind]
+                    key2 = noun_index[nind+1]
+                    long_key = str(words[key1])+' '+ str(words[key2])
+                    nind = nind+2
+                    print('old key1  {}'.format(key1))
+                    print('old key2 {}'.format(key2))
+                    print('long key {}'.format(long_key))
+                    print('new nind {}'.format(nind))
+                    final_keys.append(long_key)
+                else:
+                    final_keys.append(words[num])
+            except Exception as e:
+                print(str(e))
+    print(final_keys)
+    return final_keys
+
+        
+
+   
 #def find_bigrams(words):
 #    bigram = list(nltk.bigrams(words))
 #    _stopwords = set(stopwords.words('english') + list(punctuation))

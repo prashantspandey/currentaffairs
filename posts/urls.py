@@ -11,4 +11,5 @@ urlpatterns = [
     path('delete_posts/',delete_posts,name="DeletePosts"),
     path('test_celery/',test_celery,name="testcelery"),
     path('add_summary/',add_summary_view,name="Summary"),
+    path('add_keywords_headline/',find_keywords,name="HeadlineKeywords"),
 ]

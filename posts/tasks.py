@@ -59,6 +59,7 @@ def add_posts_scraped(path):
 @shared_task
 def delete_posts_similar():
     posts = Post.objects.all()
+    print('delete the posts')
     for post in posts:
         title = post.headline
         similar_posts = Post.objects.filter(headline = title)
@@ -93,4 +94,28 @@ def add_summary():
         except Exception as e:
             print(str(e))
 
+@shared_task
+def find_keywords_headline():
+    posts = Post.objects.all()
+    for post in posts:
+        try:
+            cache_key = HeadlineKeyword.objects.get(post = post)
+            print(cache_key.keyword)
+            keywords = find_pos(headline)
+            print('find post keywords {}'.format(keywords))
+            continue
+        except Exception as e:
+            print(str(e))
+            headline = post.headline
+            keywords = find_pos(headline)
+            continue
+            try:
+                if len(keywords) != 0:
+                    for key in keywords:
+                        headline_key = HeadlineKeyword()
+                        headline_key.keyword = str(key)
+                        headline_key.post = post
+                        headline_key.save()
+            except Exception as e:
+                print(str(e))
 

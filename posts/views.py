@@ -21,10 +21,8 @@ def scrape(request):
     return HttpResponse('scraped')
 
 def delete_posts(request):
-    user = request.user
-    if user.is_staff:
-        delete_posts_similar.delay()
-
+    print('here in delete')
+    delete_posts_similar.delay()
     return HttpResponse('deleted')
 
 def test_celery(request):
@@ -35,4 +33,8 @@ def add_summary_view(request):
     add_summary.delay()
     print('summary added')
     return HttpResponse('summary')
+
+def find_keywords(request):
+    find_keywords_headline.delay()
+    return HttpResponse('saved')
 

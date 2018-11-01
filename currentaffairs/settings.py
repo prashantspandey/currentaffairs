@@ -23,7 +23,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 SECRET_KEY = '8o6@usw8pdqul%7&n15^)(5#i(sb($&t!qb15zx-xou6+fon^j'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'currentaffairs.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'currentaffaris',
+        'NAME': 'currentaffairs',
         'HOST':'localhost',
         'USER':'prashant',
         'PASSWORD': 'elonmusk123',
