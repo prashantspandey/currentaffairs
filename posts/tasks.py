@@ -4,6 +4,8 @@ from .analyze_hindu import *
 import datetime
 from dateutil.parser import parse
 from .textsummarization import *
+from more_itertools import unique_everseen
+
 
 @shared_task
 def testing():
@@ -98,24 +100,37 @@ def add_summary():
 def find_keywords_headline():
     posts = Post.objects.all()
     for post in posts:
+        headline = post.headline
+        keywords = find_pos(headline)
         try:
-            cache_key = HeadlineKeyword.objects.get(post = post)
-            print(cache_key.keyword)
-            keywords = find_pos(headline)
-            print('find post keywords {}'.format(keywords))
-            continue
+            if len(keywords) != 0:
+                for key in keywords:
+                    headline_key = HeadlineKeyword()
+                    headline_key.keyword = str(key)
+                    headline_key.post = post
+                    headline_key.save()
         except Exception as e:
             print(str(e))
-            headline = post.headline
-            keywords = find_pos(headline)
-            continue
-            try:
-                if len(keywords) != 0:
-                    for key in keywords:
-                        headline_key = HeadlineKeyword()
-                        headline_key.keyword = str(key)
-                        headline_key.post = post
-                        headline_key.save()
-            except Exception as e:
-                print(str(e))
+
+@shared_task
+def delete_keywords():
+    posts = Post.objects.all()
+    for post in posts:
+        keys = post.headlinekeyword_set.all()
+        for i in keys:
+            i.delete()
+
+@shared_task
+def get_unique_categories():
+    posts = Post.objects.all()
+    categories = []
+    for post in posts:
+        category = post.category
+        if category not in categories:
+            categories.append(category)
+    categories = list(unique_everseen(categories))
+    all_categories = AllCategories()
+    all_categories.categories = categories
+    all_categories.save()
+
 

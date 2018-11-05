@@ -16,7 +16,7 @@ def home(request):
 def scrape(request):
     user = request.user
     if user.is_staff:
-        add_posts_scraped('/home/ubuntu/currentaffairs/posts/pickles/')
+        add_posts_scraped('/home/prashantbodhi/currentaffairs/currentaffairs/posts/pickles/')
 
     return HttpResponse('scraped')
 
@@ -38,3 +38,6 @@ def find_keywords(request):
     find_keywords_headline.delay()
     return HttpResponse('saved')
 
+def delete_headline_keywords(request):
+    delete_keywords.delay()
+    return HttpResponse('delted')

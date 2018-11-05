@@ -47,26 +47,32 @@ def find_nnp(words):
         if j == 'NNP':
             noun_tags.append(i)
             noun_index.append(words.index(i))
-    final_keys = []
-    for num,nind in enumerate(noun_index):
-        if nind > 0:
-            try:
-                if noun_index[nind+1] - noun_index[nind] == 1:
-                    key1 = noun_index[nind]
-                    key2 = noun_index[nind+1]
+    if len(noun_tags) !=0:
+        final_keys = []
+        index_tag = 0
+        for tag in range(len(noun_index)):
+            if index_tag == len(noun_index):
+                break
+            if 0 <= index_tag <= len(noun_index) -2:
+                diff_value = noun_index[index_tag + 1] - noun_index[index_tag]
+                if diff_value ==1:
+                    index_tag = index_tag + 2
+                    key1 = noun_index[index_tag]
+                    key2 = noun_index[index_tag + 1]
                     long_key = str(words[key1])+' '+ str(words[key2])
-                    nind = nind+2
-                    print('old key1  {}'.format(key1))
-                    print('old key2 {}'.format(key2))
-                    print('long key {}'.format(long_key))
-                    print('new nind {}'.format(nind))
                     final_keys.append(long_key)
                 else:
-                    final_keys.append(words[num])
-            except Exception as e:
-                print(str(e))
-    print(final_keys)
-    return final_keys
+                    key = noun_index[index_tag]     
+                    final_keys.append(words[key])
+            else:
+                if words[index_tag] not in final_keys:
+                    key = noun_index[index_tag]
+                    final_keys.append(words[key])
+                if index_tag < len(noun_index):
+                    index_tag += 1
+
+        print(final_keys)
+        return final_keys
 
         
 

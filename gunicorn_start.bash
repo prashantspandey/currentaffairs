@@ -1,10 +1,10 @@
 #!/bin/bash
 
 NAME="currentaffairs"                                   # Name of the application
-DJANGODIR=/home/ubuntu/currentaffairs               # Django project directory
-SOCKFILE=/home/ubuntu/currentaffairs/env/run/gunicorn.sock  # we will communicte using this unix socket
-USER=ubuntu                                         # the user to run as
-GROUP=ubuntu                                        # the group to run as
+DJANGODIR=/home/prashantbodhi/currentaffairs/currentaffairs               # Django project directory
+SOCKFILE=/home/prashantbodhi/currentaffairs/currentaffairs/env/run/gunicorn.sock  # we will communicte using this unix socket
+USER=prashantbodhi                                         # the user to run as
+GROUP=prashantbodhi                                        # the group to run as
 NUM_WORKERS=3                                       # how many worker processes should Gunicorn spawn
 DJANGO_SETTINGS_MODULE=currentaffairs.settings      # which settings file should Django use
 DJANGO_WSGI_MODULE=currentaffairs.wsgi              # WSGI module name
@@ -13,7 +13,7 @@ echo "Starting $NAME as `whoami`"
 # Activate the virtual environment
 
 cd $DJANGODIR
-source /home/ubuntu/currentaffairs/env/bin/activate
+source /home/prashantbodhi/currentaffairs/currentaffairs/env/bin/activate
 export DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
 export PYTHONPATH=$DJANGODIR:$PYTHONPATH
 

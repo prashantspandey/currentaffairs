@@ -45,3 +45,9 @@ class HeadlineKeyword(models.Model):
 
     def __str__(self):
         return self.keyword
+
+class AllCategories(models.Model):
+    categories = ArrayField(models.CharField(max_length=50))
+
+    def __str__(self):
+        return str(self.categories)

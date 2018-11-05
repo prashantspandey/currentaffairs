@@ -8,4 +8,5 @@ admin.site.register(Summary)
 admin.site.register(Tag)
 admin.site.register(TagLink)
 admin.site.register(HeadlineKeyword)
+admin.site.register(AllCategories)
 
