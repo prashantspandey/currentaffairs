@@ -13,4 +13,5 @@ urlpatterns = [
     path('add_summary/',add_summary_view,name="Summary"),
     path('add_keywords_headline/',find_keywords,name="HeadlineKeywords"),
     path('delete_keywords/',delete_headline_keywords,name="DeleteKeywords"),
+    path('push_content/',push_content,name="News18PushContent"),
 ]

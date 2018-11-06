@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from .tasks import *
 from .models import *
-
+from .news18 import *
 # Create your views here.
 
 
@@ -35,9 +35,21 @@ def add_summary_view(request):
     return HttpResponse('summary')
 
 def find_keywords(request):
-    find_keywords_headline.delay()
+    print('here in finding keywords')
+    try:
+        find_keywords_headline.delay()
+    except Exception as e:
+        print(str(e))
     return HttpResponse('saved')
 
 def delete_headline_keywords(request):
     delete_keywords.delay()
     return HttpResponse('delted')
+
+def push_content(request):
+    categories = get_categories('https://www.news18.com/')
+    links = get_links(categories)
+    for li in links:
+        ld = get_article(li)
+        content = live_scraping.delay(ld)
+    return HttpResponse(content)

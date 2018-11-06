@@ -62,7 +62,7 @@ class PostCategorywise(APIView):
 
 class WholePostAPIView(APIView):
     def get(self,request):
-        posts = Post.objects.all()[:50]
+        posts = Post.objects.all().order_by('-pub_date')[:50]
         overall = []
         for post in posts:
             headline_key_list = []
@@ -74,9 +74,10 @@ class WholePostAPIView(APIView):
             for i in summary:
                 summa.append(i.text)
             summ = ''.join(summa)
+            
 
             headline_key_list = list(unique_everseen(headline_key_list))
-            post_dict ={"id":post.id,"headline":post.headline,"published":post.pub_date,"summary":summa,"category":post.category,"source":post.source,'headline_keys':headline_key_list,"body":post.text}
+            post_dict ={"id":post.id,"headline":post.headline,"published":post.pub_date,"summary":summa,"category":post.category,"source":post.source,'headline_keys':headline_key_list,"body":post.text,"picture":post.picture}
             overall.append(post_dict)
         return Response(overall)
 
@@ -127,7 +128,7 @@ class SpecificCategoryPost(APIView):
             summ = ''.join(summa)
 
             headline_key_list = list(unique_everseen(headline_key_list))
-            post_dict ={"id":post.id,"headline":post.headline,"published":post.pub_date,"summary":summa,"category":post.category,"source":post.source,'headline_keys':headline_key_list,"body":post.text}
+            post_dict ={"id":post.id,"headline":post.headline,"published":post.pub_date,"summary":summa,"category":post.category,"source":post.source,'headline_keys':headline_key_list,"body":post.text,"picture":post.picture}
             overall.append(post_dict)
         return Response(overall)
 
@@ -151,7 +152,7 @@ class PostByDate(APIView):
             summ = ''.join(summa)
 
             headline_key_list = list(unique_everseen(headline_key_list))
-            post_dict ={"id":post.id,"headline":post.headline,"published":post.pub_date,"summary":summa,"category":post.category,"source":post.source,'headline_keys':headline_key_list,"body":post.text}
+            post_dict ={"id":post.id,"headline":post.headline,"published":post.pub_date,"summary":summa,"category":post.category,"source":post.source,'headline_keys':headline_key_list,"body":post.text,"picture":post.picture}
             overall.append(post_dict)
         return Response(overall)
 
@@ -188,7 +189,7 @@ class Last3DatesPosts(APIView):
             summ = ''.join(summa)
 
             headline_key_list = list(unique_everseen(headline_key_list))
-            post_dict ={"id":post.id,"headline":post.headline,"published":post.pub_date,"summary":summa,"category":post.category,"source":post.source,'headline_keys':headline_key_list,"body":post.text}
+            post_dict ={"id":post.id,"headline":post.headline,"published":post.pub_date,"summary":summa,"category":post.category,"source":post.source,'headline_keys':headline_key_list,"body":post.text,"picture":post.picture}
             overall.append(post_dict)
         return Response(overall)
 

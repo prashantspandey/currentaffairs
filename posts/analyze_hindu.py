@@ -29,11 +29,11 @@ def find_pos(content):
     _stopwords = set(stopwords.words('english') + list(punctuation))
     token = word_tokenize(cont)
     #find_bigrams(token)
-    words = []
-    for i in token:
-        if i not in _stopwords and i != '’' and i != '”':
-            words.append(i)
-    keywords = find_nnp(words)
+    #words = []
+    #for i in token:
+    #    if i not in _stopwords and i != '’' and i != '”':
+    #        words.append(i)
+    keywords = find_nnp(token)
     print('return keyword')
     return keywords
 

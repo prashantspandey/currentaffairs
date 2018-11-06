@@ -5,7 +5,7 @@ import datetime
 from dateutil.parser import parse
 from .textsummarization import *
 from more_itertools import unique_everseen
-
+import datetime
 
 @shared_task
 def testing():
@@ -57,7 +57,37 @@ def add_posts_scraped(path):
 
         except Exception as e:
             print(str(e))
+@shared_task
+def live_scraping(content):
+    headline = content['headline']
+    date = content['date']
+    story_heading = content['story_heading']
+    picture = content['image']
+    link = content['link']
+    category = content['category']
+    body = content['body']
+    da_index = []
+    for da_ind,da in enumerate(date):
+        if da == ',':
+            da_index.append(da_ind)
+    
 
+    date = date[:da_index[-1]]
+    date = str(date)
+    date = str(date).strip()
+    dt = parse(date)
+    date_final = dt.strftime('%Y-%m-%d')
+    post = Post()
+    post.headline = headline
+    post.pub_date = date_final
+    post.category = category
+    post.source = link
+    post.text = body
+    post.picture = picture
+    post.save()
+
+
+    return picture
 @shared_task
 def delete_posts_similar():
     posts = Post.objects.all()
@@ -84,33 +114,45 @@ def testing_celery():
 def add_summary():
     posts = Post.objects.all()
     for post in posts:
-        try:
-            art = post.text
-            summary = summarize_article(art)
-            summary = ''.join(summary)
-            summ = Summary()
-            summ.post = post
-            summ.text = summary
-            summ.save()
-            print('summary saved')
-        except Exception as e:
-            print(str(e))
+        alreaddy_summary = post.summary_set.all()
+        if len(already_symmary) > 0:
+            break
+        else:
+            try:
+                art = post.text
+                summary = summarize_article(art)
+                summary = ''.join(summary)
+                summ = Summary()
+                summ.post = post
+                summ.text = summary
+                summ.save()
+                print('summary saved')
+            except Exception as e:
+                print(str(e))
 
 @shared_task
 def find_keywords_headline():
-    posts = Post.objects.all()
+    posts = Post.objects.filter(pub_date = datetime.date.today())
+    print('{} numb or posts kesy'.format(len(posts)))
     for post in posts:
-        headline = post.headline
-        keywords = find_pos(headline)
-        try:
-            if len(keywords) != 0:
-                for key in keywords:
-                    headline_key = HeadlineKeyword()
-                    headline_key.keyword = str(key)
-                    headline_key.post = post
-                    headline_key.save()
-        except Exception as e:
-            print(str(e))
+        old_keys = post.headlinekeyword_set.all()
+        if len(old_keys) > 0:
+            print('found keys')
+            break
+        else:
+            headline = post.headline
+            print('headine {}'.format(headline))
+            keywords = find_pos(headline)
+            try:
+                if len(keywords) != 0:
+                    for key in keywords:
+                        print('{} this is the key for keyword'.format(key))
+                        headline_key = HeadlineKeyword()
+                        headline_key.keyword = str(key)
+                        headline_key.post = post
+                        headline_key.save()
+            except Exception as e:
+                print(str(e))
 
 @shared_task
 def delete_keywords():

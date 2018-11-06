@@ -3,6 +3,7 @@ import requests
 from more_itertools import unique_everseen
 import pickle
 
+
 def get_categories(url):
     r = requests.get(url)
     soup = BeautifulSoup(r.content,"lxml")
@@ -49,71 +50,67 @@ def get_links(category_address):
     overall_news = list(unique_everseen(overall_news))
     return overall_news
 
-def get_article(links_dict):
-    all_article = []
-    
-    for ld in links_dict:
+def get_article(ld):
+    try:
+        all_article = []
+        
         content = {}
         link = ld['link']
         cat = ld['category']
         news = ld['newsItem']
-        try:
-            r = requests.get(link)
-            soup = BeautifulSoup(r.content,"lxml")
-            headline = soup.findAll('h1')
-            for h in headline:
-                content['headline'] = h.text.strip()
-            description = soup.findAll('div')
 
-            for desc in description:
-                try:
-                    if 'author' in desc['class']:
-                        sp = desc.findAll('span')
-                        for s in sp:
-                            date_text = s.text.strip()
-                            date_text = date_text.lower()
-                            date_index = date_text.index(':')
-                            da = date_text[date_index+1:]
-                            content['date'] = da
-                except Exception as e:
-                    pass
-            story_heading = soup.findAll('h2',{'class':'story-intro'})
-            for sh in story_heading:
-                content['story_heading'] = sh.text.strip()
-            image_div = soup.findAll('div',{"class":"articleimg"})
-            for imd in image_div:
-                try:
-                    img = imd.findAll('picture')
-                    for im in img:
-                        for slayer in im:
-                            image_layer = slayer.findAll('img')
-                            for s_layer in image_layer:
-                                image_src = s_layer['srcset']
-                                content['image'] = image_src
-                                break
-                except Exception as e:
-                    print(str(e))
+        content['link'] = link
+        content['category'] = cat
+        r = requests.get(link)
+        soup = BeautifulSoup(r.content,"lxml")
+        headline = soup.findAll('h1')
+        for h in headline:
+            content['headline'] = h.text.strip()
+        description = soup.findAll('div')
 
-            body = soup.findAll('div',{'id':'article_body'})
-            for bo in body:
-                body_text = bo.text.strip()
-                update = body_text.index('update_date')
-                body_text = body_text[:update]
-                body_text = body_text.replace('\r',' ')
-                body_text = body_text.replace('\t',' ')
-                body_text = body_text.replace('\n',' ')
-                body_text = body_text.replace('\'',' ')
+        for desc in description:
+            try:
+                if 'author' in desc['class']:
+                    sp = desc.findAll('span')
+                    for s in sp:
+                        date_text = s.text.strip()
+                        date_text = date_text.lower()
+                        date_index = date_text.index(':')
+                        da = date_text[date_index+1:]
+                        content['date'] = da
+            except Exception as e:
+                pass
+        story_heading = soup.findAll('h2',{'class':'story-intro'})
+        for sh in story_heading:
+            content['story_heading'] = sh.text.strip()
+        image_div = soup.findAll('div',{"class":"articleimg"})
+        for imd in image_div:
+            try:
+                img = imd.findAll('picture')
+                for im in img:
+                    for slayer in im:
+                        image_layer = slayer.findAll('img')
+                        for s_layer in image_layer:
+                            image_src = s_layer['srcset']
+                            content['image'] = image_src
+                            break
+            except Exception as e:
+                print(str(e))
 
-                content['body'] = body_text
-            print(content)
-            all_article.append(content)
-        except Exception as e:
-            print(str(e))
-    return all_article
+        body = soup.findAll('div',{'id':'article_body'})
+        for bo in body:
+            body_text = bo.text.strip()
+            update = body_text.index('update_date')
+            body_text = body_text[:update]
+            body_text = body_text.replace('\r',' ')
+            body_text = body_text.replace('\t',' ')
+            Body_text = body_text.replace('\n',' ')
+            body_text = body_text.replace('\'',' ')
 
-if __name__== '__main__':
-        categories = get_categories('https://www.news18.com/')
-        links = get_links(categories)
-        article = get_article(links)
-        with open('news18_5nov.pickle','wb') as fi:
-            pickle.dump(article,fi)
+            content['body'] = body_text
+        print(content)
+        return content
+    except Exception as e:
+        print(str(e))
+
+

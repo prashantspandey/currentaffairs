@@ -12,6 +12,7 @@ class Post(models.Model):
     pub_date = models.DateField(null=True,blank=True)
     category = models.CharField(max_length = 50)
     source = models.URLField(max_length=500)
+    picture = models.URLField(max_length=500,null=True,blank=True)
     
     def __str__(self):
         return str(self.headline)
