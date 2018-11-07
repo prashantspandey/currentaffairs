@@ -78,10 +78,10 @@ WSGI_APPLICATION = 'currentaffairs.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'currentaffairs',
+        'NAME': 'currentaffairs2',
         'HOST':'localhost',
-        'USER':'prashant',
-        'PASSWORD': 'elonmusk123',
+        'USER':'postgres',
+        'PASSWORD': 'dnpandey',
     }
 }
 

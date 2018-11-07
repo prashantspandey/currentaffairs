@@ -6,7 +6,6 @@ from dateutil.parser import parse
 from .textsummarization import *
 from more_itertools import unique_everseen
 import datetime
-
 @shared_task
 def testing():
     posts = Post.objects.all()
@@ -132,13 +131,13 @@ def add_summary():
 
 @shared_task
 def find_keywords_headline():
-    posts = Post.objects.filter(pub_date = datetime.date.today())
+    posts = Post.objects.all()
     print('{} numb or posts kesy'.format(len(posts)))
-    for post in posts:
+    for num_post,post in enumerate(posts):
         old_keys = post.headlinekeyword_set.all()
         if len(old_keys) > 0:
             print('found keys')
-            break
+            continue
         else:
             headline = post.headline
             print('headine {}'.format(headline))
@@ -146,10 +145,20 @@ def find_keywords_headline():
             try:
                 if len(keywords) != 0:
                     for key in keywords:
-                        print('{} this is the key for keyword'.format(key))
+                        name = key['name']
+                        entity = key['entity']
+                        print('{} this is the key for keyword'.format(name))
                         headline_key = HeadlineKeyword()
-                        headline_key.keyword = str(key)
+                        wiki = key['wikipedia']
+                        if wiki is not None:
+                            headline_key.wiki = wiki
+                        nnp = key['type_nnp']
+                        if nnp is not None:
+                            headline_key.type_nnp = nnp
+                        headline_key.keyword = name
+                        headline_key.entity = entity
                         headline_key.post = post
+
                         headline_key.save()
             except Exception as e:
                 print(str(e))

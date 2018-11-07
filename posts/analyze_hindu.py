@@ -14,6 +14,9 @@ import nltk
 import json
 import datetime
 import pickle
+import requests
+url =\
+"https://language.googleapis.com/v1/documents:analyzeEntities?key=AIzaSyDOW6Nt-1jpzxcEbypSpJ-ObCsZHjYBjPA"
 
 def read_file(path):
     with open(path,'rb') as fi:
@@ -26,16 +29,50 @@ def find_pos(content):
         cont = ','.join(content)
     else:
         cont = content
-    _stopwords = set(stopwords.words('english') + list(punctuation))
-    token = word_tokenize(cont)
+
+    #_stopwords = set(stopwords.words('english') + list(punctuation))
+    #token = word_tokenize(cont.lower())
     #find_bigrams(token)
     #words = []
     #for i in token:
     #    if i not in _stopwords and i != '’' and i != '”':
     #        words.append(i)
-    keywords = find_nnp(token)
-    print('return keyword')
-    return keywords
+    text ={"document":{"content":cont.lower(),"type":"PLAIN_TEXT"}}
+    r = requests.post(url,json=text)
+    data = r.text
+    #type_name = data['name']
+    #type_type = data['type']
+    #type_mentions_type = data['mentions']['type']
+    #type_wikipedia = data['metadata']['wikipedia_url']
+    json_data = json.loads(data)
+    print(len(json_data['entities']))
+    final_keywords =[]
+    for i in range(len(json_data['entities'])):
+        name = json_data['entities'][i]['name']
+        type_entity = json_data['entities'][i]['type']
+        try:
+            type_wikipedia = json_data['entities'][i]['metadata']['wikipedia_url']
+        except:
+            type_wikipedia = None
+        type_nnp = json_data['entities'][i]['mentions'][0]['type']
+        print(name)
+        print(type_entity)
+        print(type_wikipedia)
+        print(type_nnp)
+        keys =\
+                {'name':name,'entity':type_entity,'wikipedia':type_wikipedia,'type_nnp':type_nnp}
+        final_keywords.append(keys)
+
+
+            
+
+        #print(type_type)
+        #print(type_mentions_type)
+        #print(type_wikipedia)
+    #keywords = find_nnp(token)
+    #if keywords:
+    #    keywords = list(unique_everseen(keywords))
+    return final_keywords
 
 
 def find_nnp(words):
@@ -47,6 +84,7 @@ def find_nnp(words):
         if j == 'NNP':
             noun_tags.append(i)
             noun_index.append(words.index(i))
+            print('This is the live keyword {}'.format(i))
     if len(noun_tags) !=0:
         final_keys = []
         index_tag = 0
@@ -60,13 +98,19 @@ def find_nnp(words):
                     key1 = noun_index[index_tag]
                     key2 = noun_index[index_tag + 1]
                     long_key = str(words[key1])+' '+ str(words[key2])
+
                     final_keys.append(long_key)
                 else:
                     key = noun_index[index_tag]     
+                    if str(words[key]) in final_keys:
+                        continue
                     final_keys.append(words[key])
             else:
                 if words[index_tag] not in final_keys:
                     key = noun_index[index_tag]
+                    if str(words[key]) in final_keys:
+                        continue
+
                     final_keys.append(words[key])
                 if index_tag < len(noun_index):
                     index_tag += 1
