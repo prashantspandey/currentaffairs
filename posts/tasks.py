@@ -113,14 +113,14 @@ def testing_celery():
 def add_summary():
     posts = Post.objects.all()
     for post in posts:
-        alreaddy_summary = post.summary_set.all()
-        if len(already_symmary) > 0:
+        already_summary = post.summary_set.all()
+        if len(already_summary) > 0:
             break
         else:
             try:
                 art = post.text
                 summary = summarize_article(art)
-                summary = ''.join(summary)
+                summary = ' '.join(summary)
                 summ = Summary()
                 summ.post = post
                 summ.text = summary

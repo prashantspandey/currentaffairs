@@ -193,3 +193,24 @@ class Last3DatesPosts(APIView):
             overall.append(post_dict)
         return Response(overall)
 
+class KeywordsByType(APIView):
+    def get(self,request):
+        keywords = HeadlineKeyword.objects.all()
+        types = []
+        for keyword in keywords:
+            types.append(keyword.entity)
+        types = list(unique_everseen(types))
+        return Response({'keyword_types':types})
+
+class KeywordsByTypePost(APIView):
+    def post(self,request,*args,**kwargs):
+        data = request.data
+        entity = data['entity']
+        if entity == "PERSON":
+            keywords = HeadlineKeyword.objects.filter(entity = entity,type_nnp='PROPER')
+        else:
+            keywords = HeadlineKeyword.objects.filter(entity = entity)
+
+        serializer = HeadlineKeywordSerializer(keywords,many=True)
+        context = {'keywords':serializer.data}
+        return Response(context)
