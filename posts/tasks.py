@@ -115,7 +115,7 @@ def add_summary():
     for post in posts:
         already_summary = post.summary_set.all()
         if len(already_summary) > 0:
-            break
+            continue
         else:
             try:
                 art = post.text

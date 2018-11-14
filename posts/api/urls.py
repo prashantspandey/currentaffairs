@@ -17,4 +17,8 @@ urlpatterns = [
     path('get_by_latest_date/',views.Last3DatesPosts.as_view(),name="Last3Posts"),
     path('type_keyword/',views.KeywordsByType.as_view(),name="keywords_by_type"),
     path('get_type_keyword/',views.KeywordsByTypePost.as_view(),name="keywords_by_type_post"),
+    path('get_people_today/',views.GetPeopleToday.as_view(),name="GetPeopleToday"),
+    path('get_location_today/',views.GetLocationToday.as_view(),name="GetLocationToday"),
+    path('get_organization_today/',views.GetOrganizationToday.as_view(),name="GetOrganizationToday"),
+    path('get_event_today/',views.GetEventToday.as_view(),name="GetEventToday"),
 ]

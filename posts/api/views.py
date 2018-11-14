@@ -214,3 +214,53 @@ class KeywordsByTypePost(APIView):
         serializer = HeadlineKeywordSerializer(keywords,many=True)
         context = {'keywords':serializer.data}
         return Response(context)
+
+class GetPeopleToday(APIView):
+    def get(self,request):
+        dt = datetime.date.today()
+        people_keys = []
+        keywords_posts = HeadlineKeyword.objects.filter(post__pub_date=dt)
+        for key_post in keywords_posts:
+            if key_post.entity =='PERSON' and key_post.type_nnp=='PROPER':
+                people_keys.append(key_post.keyword)
+        people_keys = list(unique_everseen(people_keys))
+        context = {'people':people_keys}
+        return Response(context)
+
+
+class GetLocationToday(APIView):
+    def get(self,request):
+        dt = datetime.date.today()
+        people_keys = []
+        keywords_posts = HeadlineKeyword.objects.filter(post__pub_date=dt)
+        for key_post in keywords_posts:
+            if key_post.entity =='LOCATION':
+                people_keys.append(key_post.keyword)
+        people_keys = list(unique_everseen(people_keys))
+        context = {'locations':people_keys}
+        return Response(context)
+
+class GetOrganizationToday(APIView):
+    def get(self,request):
+        dt = datetime.date.today()
+        people_keys = []
+        keywords_posts = HeadlineKeyword.objects.filter(post__pub_date=dt)
+        for key_post in keywords_posts:
+            if key_post.entity =='ORGANIZATION':
+                people_keys.append(key_post.keyword)
+        people_keys = list(unique_everseen(people_keys))
+        context = {'organizations':people_keys}
+        return Response(context)
+
+class GetEventToday(APIView):
+    def get(self,request):
+        dt = datetime.date.today()
+        people_keys = []
+        keywords_posts = HeadlineKeyword.objects.filter(post__pub_date=dt)
+        for key_post in keywords_posts:
+            if key_post.entity =='EVENT':
+                people_keys.append(key_post.keyword)
+        people_keys = list(unique_everseen(people_keys))
+        context = {'events':people_keys}
+        return Response(context)
+    
