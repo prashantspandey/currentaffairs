@@ -6,6 +6,7 @@ from dateutil.parser import parse
 from .textsummarization import *
 from more_itertools import unique_everseen
 import datetime
+from .toi import *
 @shared_task
 def testing():
     posts = Post.objects.all()
@@ -87,6 +88,50 @@ def live_scraping(content):
 
 
     return picture
+
+@shared_task
+def live_scraping_toi():
+    categories = get_sections('https://timesofindia.indiatimes.com/home/headlines')
+    print('categories {}'.format(categories))
+    all_art_links = []
+    for i in categories:
+        links_art = get_links_sections(i['link'],i['section'])
+        all_art_links.extend(links_art)
+    for j in all_art_links:
+        print(j)
+        content = get_article(j['link'])
+
+        headline = content['title']
+        date = content['date']
+        #story_heading = content['story_heading']
+        #picture = content['image']
+        link = content['link']
+        category = j['section']
+        body = content['body']
+        da_index = []
+        for da_ind,da in enumerate(date):
+            if da == ',':
+                da_index.append(da_ind)
+        
+
+        date = date[:da_index[-1]]
+        date = str(date)
+        date = str(date).strip()
+        dt = parse(date)
+        date_final = dt.strftime('%Y-%m-%d')
+        post = Post()
+        post.headline = headline
+        post.pub_date = date_final
+        post.category = category
+        post.source = link
+        post.text = body
+        #post.picture = picture
+        post.save()
+
+
+        return picture
+
+
 @shared_task
 def delete_posts_similar():
     posts = Post.objects.all()
@@ -115,6 +160,7 @@ def add_summary():
     for post in posts:
         already_summary = post.summary_set.all()
         if len(already_summary) > 0:
+            print('summary already found so skipping')
             continue
         else:
             try:
