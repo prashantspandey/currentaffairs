@@ -53,3 +53,6 @@ def push_content(request):
         ld = get_article(li)
         content = live_scraping.delay(ld)
     return HttpResponse(content)
+def push_content_toi(request):
+    live_scraping_toi.delay()
+    return HttpResponse('TOI scraped')
