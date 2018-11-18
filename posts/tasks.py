@@ -92,44 +92,67 @@ def live_scraping(content):
 @shared_task
 def live_scraping_toi():
     categories = get_sections('https://timesofindia.indiatimes.com/home/headlines')
-    print('categories {}'.format(categories))
     all_art_links = []
     for i in categories:
         links_art = get_links_sections(i['link'],i['section'])
-        all_art_links.extend(links_art)
-    for j in all_art_links:
-        print(j)
-        content = get_article(j['link'])
-
-        headline = content['title']
-        date = content['date']
-        #story_heading = content['story_heading']
-        #picture = content['image']
-        link = content['link']
-        category = j['section']
-        body = content['body']
-        da_index = []
-        for da_ind,da in enumerate(date):
-            if da == ',':
-                da_index.append(da_ind)
-        
-
-        date = date[:da_index[-1]]
-        date = str(date)
-        date = str(date).strip()
-        dt = parse(date)
-        date_final = dt.strftime('%Y-%m-%d')
-        post = Post()
-        post.headline = headline
-        post.pub_date = date_final
-        post.category = category
-        post.source = link
-        post.text = body
-        #post.picture = picture
-        post.save()
+        try:
+            for j in links_art:
+                try:
+                    post = Post.objects.get(source = j['link'])
+                    continue
+                except:
+                    print(j['link'])
+                    if 'https://timesofindia.indiatimes.com/rss.cms' in j['link']:
+                        continue
+                    content = get_article(j['link'])
+                    print(content)
 
 
-        return picture
+                    headline = content['title']
+                    date = content['date']
+                    #story_heading = content['story_heading']
+                    #picture = content['image']
+                    link = content['link']
+                    category = j['section']
+                    body = content['body']
+                    da_index = []
+                    for da_ind,da in enumerate(date):
+                        if da == ',':
+                            da_index.append(da_ind)
+                    
+                    #date = date[:da_index[-1]]
+                    if 'TNN' in date:
+                        date_pipe = date.index('TNN')
+                        print(date_pipe)
+                        date_last = date[date_pipe+4:da_index[-1]]
+                    if 'Updated' in date:
+                        date_pipe = date.index('Updated')
+                        print(date_pipe)
+                        date_last = date[date_pipe+9:da_index[-1]]
+
+                    else:
+                        date_pipe = date.index('|')
+                        print(date_pipe)
+                        date_last = date[date_pipe+2:da_index[-1]]
+
+
+                    date = str(date_last)
+                    date = str(date).strip()
+                    dt = parse(date)
+                    date_final = dt.strftime('%Y-%m-%d')
+                    post = Post()
+                    post.headline = headline
+                    post.pub_date = date_final
+                    post.category = category
+                    post.source = link
+                    post.text = body
+                    #post.picture = picture
+                    post.save()
+                    print(headline)
+
+
+        except Exception as e:
+            print(str(e))
 
 
 @shared_task
